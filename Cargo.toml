@@ -1,0 +1,25 @@
+[package]
+name = "near-cli"
+version = "0.1.0"
+authors = ["Near Inc <hello@near.org>"]
+description = "Command line utility for NEAR protocol"
+edition = "2018"
+
+[dependencies]
+actix = "0.9"
+actix-web = { version = "2", features = [ "openssl" ] }
+base64 = "0.12.3"
+clap = "3.0.0-beta.1"
+color-eyre = "0.5"
+hex = "0.4.2"
+openssl-probe = { version = "0.1.2" }
+tracing = "0.1.13"
+tracing-subscriber = "0.2.4"
+serde_json = "1.0.57"
+smart-default = "0.6.0"
+strum = "0.19.2"
+strum_macros = "0.19.2"
+
+near-crypto = { git = "https://github.com/nearprotocol/nearcore", rev="97a6f035e9423e5d9ddb64303df93600d105502e" }
+near-primitives = { git = "https://github.com/nearprotocol/nearcore", rev="97a6f035e9423e5d9ddb64303df93600d105502e" }
+near-jsonrpc-client = { git = "https://github.com/nearprotocol/nearcore", rev="97a6f035e9423e5d9ddb64303df93600d105502e" }
