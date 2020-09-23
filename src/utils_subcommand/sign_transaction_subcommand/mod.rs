@@ -61,7 +61,6 @@ impl CliArgs {
             hex::encode(signed_transaction.try_to_vec()?)
         );
 
-
         Ok(())
     }
 }

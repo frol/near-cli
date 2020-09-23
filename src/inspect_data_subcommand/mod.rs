@@ -1,6 +1,7 @@
 mod blocks_subcommand;
 
-/// Inspect data stored in NEAR protocol network (e.g. blocks, transactions, balances)
+/// Inspect data stored in NEAR protocol network (e.g. blocks, transactions,
+/// balances)
 #[derive(Debug, clap::Clap)]
 #[clap(version, author, setting(clap::AppSettings::ColoredHelp))]
 pub struct CliArgs {

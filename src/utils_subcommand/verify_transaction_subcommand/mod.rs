@@ -1,5 +1,3 @@
-use std::convert::TryInto;
-
 use color_eyre::eyre::WrapErr;
 use strum::VariantNames;
 
@@ -16,8 +14,8 @@ pub struct CliArgs {
         possible_values=crate::common::TransactionFormat::VARIANTS
     )]
     transaction_format: crate::common::TransactionFormat,
-    #[clap(short, long)]
-    public_key: Vec<String>,
+    #[clap(short, long = "public-key")]
+    public_keys: Vec<near_crypto::PublicKey>,
     signed_transaction: String,
 }
 
@@ -38,22 +36,9 @@ impl CliArgs {
             .wrap_err("Unable to parse transaction")?
         };
 
-        let public_keys: Vec<near_crypto::PublicKey> = self
-            .public_key
-            .iter()
-            .map(|public_key_str| {
-                public_key_str.as_str().try_into().map_err(|err| {
-                    color_eyre::Report::msg(format!(
-                        "Could not parse '{}' as a public key: {}",
-                        public_key_str, err
-                    ))
-                })
-            })
-            .collect::<Result<_, _>>()?;
-
         if !near_primitives::transaction::verify_transaction_signature(
             &signed_transaction,
-            &public_keys,
+            &self.public_keys,
         ) {
             Err(color_eyre::Report::msg(
                 "Transaction is NOT signed with any of the public keys.",

@@ -1,9 +1,10 @@
 use clap::Clap;
 
 pub(crate) mod common;
+mod construct_transaction_subcommand;
 mod inspect_data_subcommand;
 mod inspect_network_subcommand;
-mod submit_subcommand;
+mod submit_transaction_subcommand;
 mod utils_subcommand;
 
 type CliResult = color_eyre::Result<()>;
@@ -21,7 +22,8 @@ pub struct CliArgs {
 pub enum CliSubCommand {
     InspectData(inspect_data_subcommand::CliArgs),
     InspectNetwork(inspect_network_subcommand::CliArgs),
-    Submit(submit_subcommand::CliArgs),
+    ConstructTransaction(construct_transaction_subcommand::CliArgs),
+    SubmitTransaction(submit_transaction_subcommand::CliArgs),
     Utils(utils_subcommand::CliArgs),
 }
 
@@ -34,8 +36,11 @@ impl CliArgs {
             CliSubCommand::InspectNetwork(inspect_network_subcommand) => {
                 inspect_network_subcommand.process(self)
             }
-            CliSubCommand::Submit(send_transaction_subcommand) => {
-                send_transaction_subcommand.process(self)
+            CliSubCommand::ConstructTransaction(construct_transaction_subcommand) => {
+                construct_transaction_subcommand.process(self)
+            }
+            CliSubCommand::SubmitTransaction(submit_transaction_subcommand) => {
+                submit_transaction_subcommand.process(self)
             }
             CliSubCommand::Utils(utils_subcommand) => utils_subcommand.process(self),
         }
@@ -45,8 +50,8 @@ impl CliArgs {
 fn main() -> CliResult {
     let cli = CliArgs::parse();
 
-    // We use it to automatically search the for root certificates to perform HTTPS calls
-    // (inspect and submit subcommands)
+    // We use it to automatically search the for root certificates to perform HTTPS
+    // calls (inspect and submit subcommands)
     openssl_probe::init_ssl_cert_env_vars();
 
     color_eyre::install()?;

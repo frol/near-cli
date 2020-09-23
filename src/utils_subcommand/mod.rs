@@ -1,6 +1,6 @@
 mod generate_keypair_subcommand;
 mod sign_transaction_subcommand;
-mod submit_transaction_subcommand;
+mod submit_raw_transaction_subcommand;
 mod verify_transaction_subcommand;
 
 /// Collection of various low-level helpers
@@ -16,7 +16,7 @@ pub enum CliSubCommand {
     GenerateKeypair(generate_keypair_subcommand::CliArgs),
     SignTransaction(sign_transaction_subcommand::CliArgs),
     VerifyTransaction(verify_transaction_subcommand::CliArgs),
-    SubmitTransaction(submit_transaction_subcommand::CliArgs),
+    SubmitRawTransaction(submit_raw_transaction_subcommand::CliArgs),
 }
 
 impl CliArgs {
@@ -31,8 +31,8 @@ impl CliArgs {
             CliSubCommand::VerifyTransaction(verify_transaction_subcommand) => {
                 verify_transaction_subcommand.process(self)
             }
-            CliSubCommand::SubmitTransaction(submit_transaction_subcommand) => {
-                submit_transaction_subcommand.process(self)
+            CliSubCommand::SubmitRawTransaction(submit_raw_transaction_subcommand) => {
+                submit_raw_transaction_subcommand.process(self)
             }
         }
     }
