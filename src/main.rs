@@ -28,21 +28,21 @@ pub enum CliSubCommand {
 }
 
 impl CliArgs {
-    pub fn process(&self) -> CliResult {
+    pub async fn process(&self) -> CliResult {
         match &self.subcommand {
             CliSubCommand::InspectData(inspect_data_subcommand) => {
-                inspect_data_subcommand.process(self)
+                inspect_data_subcommand.process(self).await
             }
             CliSubCommand::InspectNetwork(inspect_network_subcommand) => {
-                inspect_network_subcommand.process(self)
+                inspect_network_subcommand.process(self).await
             }
             CliSubCommand::ConstructTransaction(construct_transaction_subcommand) => {
-                construct_transaction_subcommand.process(self)
+                construct_transaction_subcommand.process(self).await
             }
             CliSubCommand::SubmitTransaction(submit_transaction_subcommand) => {
-                submit_transaction_subcommand.process(self)
+                submit_transaction_subcommand.process(self).await
             }
-            CliSubCommand::Utils(utils_subcommand) => utils_subcommand.process(self),
+            CliSubCommand::Utils(utils_subcommand) => utils_subcommand.process(self).await,
         }
     }
 }
@@ -56,5 +56,7 @@ fn main() -> CliResult {
 
     color_eyre::install()?;
 
-    cli.process()
+    actix::System::builder()
+        .build()
+        .block_on(async move { cli.process().await })
 }

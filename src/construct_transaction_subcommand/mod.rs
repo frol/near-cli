@@ -78,7 +78,7 @@ pub enum CliSubCommand {
 }
 
 impl CliArgs {
-    pub fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
+    pub async fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
         let unsigned_transaction = near_primitives::transaction::Transaction {
             signer_id: self.signer_account_id.clone(),
             public_key: self.signer_public_key.clone(),
@@ -90,7 +90,9 @@ impl CliArgs {
 
         match &self.subcommand {
             CliSubCommand::Transfer(transfer_subcommand) => {
-                transfer_subcommand.process(self, unsigned_transaction)
+                transfer_subcommand
+                    .process(self, unsigned_transaction)
+                    .await
             }
         }
     }

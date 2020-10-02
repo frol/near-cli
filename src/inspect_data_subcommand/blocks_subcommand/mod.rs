@@ -35,7 +35,7 @@ pub struct GetBlockByHeightCliArgs {
 }
 
 impl CliArgs {
-    pub fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
+    pub async fn process(&self, parent_cli_args: &super::CliArgs) -> crate::CliResult {
         let block_reference = match &self.subcommand {
             CliSubCommand::GetFinalized => near_primitives::types::Finality::Final.into(),
             CliSubCommand::GetLatest => near_primitives::types::Finality::None.into(),
@@ -50,12 +50,13 @@ impl CliArgs {
             }
         };
 
-        let block = actix::System::builder().build().block_on(async {
-            let client = near_jsonrpc_client::new_client("https://rpc.testnet.near.org");
-            client.block(block_reference).await.map_err(|err| {
+        let block = parent_cli_args
+            .rpc_client()
+            .block(block_reference)
+            .await
+            .map_err(|err| {
                 color_eyre::Report::msg(format!("Could not fetch the latest block: {:?}", err))
-            })
-        })?;
+            })?;
         // TODO: Show more or less details based on a CLI flag
         println!("The requested block: {:#?}", block);
         // TODO: Have it under a flag

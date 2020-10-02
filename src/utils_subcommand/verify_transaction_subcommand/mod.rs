@@ -20,7 +20,7 @@ pub struct CliArgs {
 }
 
 impl CliArgs {
-    pub fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
+    pub async fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
         let signed_transaction = {
             let signed_transaction_borsh = match self.transaction_format {
                 crate::common::TransactionFormat::Base64 => {

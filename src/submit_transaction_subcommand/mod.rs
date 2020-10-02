@@ -25,7 +25,7 @@ pub enum CliSubCommand {
 }
 
 impl CliArgs {
-    pub fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
+    pub async fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
         let block_hash = "5dMs1XfiUWCaP4USZ4EuSY6oLzm3w2FBNZeQu29H55sa"
             .try_into()
             .unwrap(); // fetch_latest_block_hash();
@@ -41,7 +41,9 @@ impl CliArgs {
 
         match &self.subcommand {
             CliSubCommand::Transfer(transfer_subcommand) => {
-                transfer_subcommand.process(self, unsigned_transaction)
+                transfer_subcommand
+                    .process(self, unsigned_transaction)
+                    .await
             }
         }
     }

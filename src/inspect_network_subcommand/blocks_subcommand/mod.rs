@@ -5,7 +5,7 @@ pub struct CliArgs {
 }
 
 impl CliArgs {
-    pub fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
+    pub async fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
         println!("blocks");
         Ok(())
     }

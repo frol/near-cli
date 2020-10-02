@@ -8,7 +8,7 @@ pub struct CliArgs {
 }
 
 impl CliArgs {
-    pub fn process(
+    pub async fn process(
         &self,
         parent_cli_args: &super::CliArgs,
         prepopulated_unsigned_transaction: near_primitives::transaction::Transaction,

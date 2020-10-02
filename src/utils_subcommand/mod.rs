@@ -11,6 +11,12 @@ pub struct CliArgs {
     subcommand: CliSubCommand,
 }
 
+impl CliArgs {
+    fn rpc_client(&self) -> near_jsonrpc_client::JsonRpcClient {
+        near_jsonrpc_client::new_client("https://rpc.testnet.near.org")
+    }
+}
+
 #[derive(Debug, clap::Clap)]
 pub enum CliSubCommand {
     GenerateKeypair(generate_keypair_subcommand::CliArgs),
@@ -20,19 +26,19 @@ pub enum CliSubCommand {
 }
 
 impl CliArgs {
-    pub fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
+    pub async fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
         match &self.subcommand {
             CliSubCommand::GenerateKeypair(generate_keypair_subcommand) => {
-                generate_keypair_subcommand.process(self)
+                generate_keypair_subcommand.process(self).await
             }
             CliSubCommand::SignTransaction(sign_transaction_subcommand) => {
-                sign_transaction_subcommand.process(self)
+                sign_transaction_subcommand.process(self).await
             }
             CliSubCommand::VerifyTransaction(verify_transaction_subcommand) => {
-                verify_transaction_subcommand.process(self)
+                verify_transaction_subcommand.process(self).await
             }
             CliSubCommand::SubmitRawTransaction(submit_raw_transaction_subcommand) => {
-                submit_raw_transaction_subcommand.process(self)
+                submit_raw_transaction_subcommand.process(self).await
             }
         }
     }

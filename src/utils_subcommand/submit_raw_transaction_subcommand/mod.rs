@@ -8,21 +8,16 @@ pub struct CliArgs {
 }
 
 impl CliArgs {
-    pub fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
+    pub async fn process(&self, parent_cli_args: &super::CliArgs) -> crate::CliResult {
         let signed_transaction = self.signed_transaction.clone();
 
-        let transaction_broadcast_result = actix::System::builder().build().block_on(async {
-            let client = near_jsonrpc_client::new_client("https://rpc.testnet.near.org");
-            client
-                .broadcast_tx_async(signed_transaction)
-                .await
-                .map_err(|err| {
-                    color_eyre::Report::msg(format!(
-                        "Could not broadcast the transaction: {:?}",
-                        err
-                    ))
-                })
-        })?;
+        let transaction_broadcast_result = parent_cli_args
+            .rpc_client()
+            .broadcast_tx_async(signed_transaction)
+            .await
+            .map_err(|err| {
+                color_eyre::Report::msg(format!("Could not broadcast the transaction: {:?}", err))
+            })?;
 
         println!(
             "Transaction has been submitted: {}",

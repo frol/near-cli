@@ -15,7 +15,7 @@ pub struct CliArgs {
 }
 
 impl CliArgs {
-    pub fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
+    pub async fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
         let secret_key = near_crypto::SecretKey::from_random(near_crypto::KeyType::ED25519);
         let public_key = secret_key.public_key();
         let account_id = hex::encode(secret_key.public_key().key_data());

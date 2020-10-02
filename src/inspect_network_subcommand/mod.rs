@@ -15,9 +15,9 @@ pub enum CliSubCommand {
 }
 
 impl CliArgs {
-    pub fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
+    pub async fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
         match &self.subcommand {
-            CliSubCommand::Blocks(blocks_subcommand) => blocks_subcommand.process(self),
+            CliSubCommand::Blocks(blocks_subcommand) => blocks_subcommand.process(self).await,
         }
     }
 }
