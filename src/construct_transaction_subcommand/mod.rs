@@ -1,49 +1,4 @@
-use std::convert::TryInto;
-
 mod transfer_subcommand;
-
-#[derive(derive_more::AsRef)]
-struct BlobAsBase58String<T>
-where
-    for<'a> T: std::convert::TryFrom<&'a [u8]> + AsRef<[u8]>,
-{
-    inner: T,
-}
-
-impl<T> std::fmt::Debug for BlobAsBase58String<T>
-where
-    for<'a> T: std::convert::TryFrom<&'a [u8]> + AsRef<[u8]>,
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        near_primitives::serialize::to_base(self.inner.as_ref()).fmt(f)
-    }
-}
-
-impl<T> std::str::FromStr for BlobAsBase58String<T>
-where
-    for<'a> T: std::convert::TryFrom<&'a [u8]> + AsRef<[u8]>,
-{
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        Ok(Self {
-            inner: near_primitives::serialize::from_base(value)
-                .map_err(|_| "err")?
-                .as_slice()
-                .try_into()
-                .map_err(|_| "err")?,
-        })
-    }
-}
-
-impl<T> BlobAsBase58String<T>
-where
-    for<'a> T: std::convert::TryFrom<&'a [u8]> + AsRef<[u8]>,
-{
-    fn into_inner(self) -> T {
-        self.inner
-    }
-}
 
 /// Construct transactions (like transfer tokens, call a function, etc) ready to
 /// be sent to NEAR protocol network
@@ -57,7 +12,7 @@ where
 #[clap(version, author, setting(clap::AppSettings::ColoredHelp))]
 pub struct CliArgs {
     #[clap(long)]
-    base_block_hash: BlobAsBase58String<near_primitives::hash::CryptoHash>,
+    base_block_hash: crate::common::BlobAsBase58String<near_primitives::hash::CryptoHash>,
     #[clap(long)]
     signer_account_id: near_primitives::types::AccountId,
     #[clap(long)]

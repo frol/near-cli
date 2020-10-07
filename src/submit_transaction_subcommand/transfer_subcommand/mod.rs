@@ -1,3 +1,5 @@
+use near_primitives::borsh::BorshSerialize;
+
 /// Transfer tokens in NEAR protocol
 #[derive(Debug, clap::Clap)]
 #[clap(version, author, setting(clap::AppSettings::ColoredHelp))]
@@ -26,6 +28,20 @@ impl CliArgs {
         let signed_transaction =
             near_primitives::transaction::SignedTransaction::new(signature, unsigned_transaction);
         println!("{:#?}", signed_transaction);
+
+        let transaction_info = parent_cli_args
+            .rpc_client()
+            .broadcast_tx_commit(near_primitives::serialize::to_base64(
+                signed_transaction
+                    .try_to_vec()
+                    .expect("Transaction is not expected to fail on serialization"),
+            ))
+            .await
+            .map_err(|err| {
+                color_eyre::Report::msg(format!("Transaction submition failed: {:?}", err))
+            })?;
+
+        println!("Success: {:#?}", transaction_info);
         Ok(())
     }
 }

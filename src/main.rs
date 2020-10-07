@@ -12,7 +12,15 @@ type CliResult = color_eyre::Result<()>;
 /// This doc string acts as a help message when the user runs '--help'
 /// as do all doc strings on fields
 #[derive(Debug, Clap)]
-#[clap(version, author, about, setting(clap::AppSettings::ColoredHelp))]
+#[clap(
+    version,
+    author,
+    about,
+    setting(clap::AppSettings::ColoredHelp),
+    setting(clap::AppSettings::DisableHelpSubcommand),
+    setting(clap::AppSettings::VersionlessSubcommands),
+    setting(clap::AppSettings::NextLineHelp)
+)]
 pub struct CliArgs {
     #[clap(subcommand)]
     subcommand: CliSubCommand,

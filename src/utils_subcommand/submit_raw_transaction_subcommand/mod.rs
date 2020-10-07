@@ -1,5 +1,3 @@
-use strum::VariantNames;
-
 /// Submit a signed transaction to the network
 #[derive(Debug, clap::Clap)]
 #[clap(version, author, setting(clap::AppSettings::ColoredHelp))]

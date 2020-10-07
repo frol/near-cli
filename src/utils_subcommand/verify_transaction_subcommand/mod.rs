@@ -4,6 +4,8 @@ use strum::VariantNames;
 use near_primitives::borsh::BorshDeserialize;
 
 /// Verify that the specified signed transaction is signed with the right key
+///
+/// asd
 #[derive(Debug, clap::Clap)]
 #[clap(version, author, setting(clap::AppSettings::ColoredHelp))]
 pub struct CliArgs {

@@ -1,9 +1,9 @@
-use std::convert::TryInto;
-
 mod transfer_subcommand;
 
 /// Submit transactions (like transfer tokens, call a function, etc) to NEAR
 /// protocol network
+///
+/// See the help for individual subcommands
 #[derive(Debug, clap::Clap)]
 #[clap(version, author, setting(clap::AppSettings::ColoredHelp))]
 pub struct CliArgs {
@@ -25,18 +25,44 @@ pub enum CliSubCommand {
 }
 
 impl CliArgs {
+    fn rpc_client(&self) -> near_jsonrpc_client::JsonRpcClient {
+        near_jsonrpc_client::new_client("https://rpc.testnet.near.org")
+    }
+
     pub async fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
-        let block_hash = "5dMs1XfiUWCaP4USZ4EuSY6oLzm3w2FBNZeQu29H55sa"
-            .try_into()
-            .unwrap(); // fetch_latest_block_hash();
-        let nonce = 10; // fetch_access_key(signer_account_id, signer_public_key).nonce;
+        let online_signer_access_key_response = self
+            .rpc_client()
+            .query(near_primitives::rpc::RpcQueryRequest {
+                block_reference: near_primitives::types::Finality::Final.into(),
+                request: near_primitives::views::QueryRequest::ViewAccessKey {
+                    account_id: self.signer_account_id.clone(),
+                    public_key: self.signer_public_key.clone(),
+                },
+            })
+            .await
+            .map_err(|err| {
+                color_eyre::Report::msg(format!(
+                    "Failed to fetch public key information for nonce: {:?}",
+                    err
+                ))
+            })?;
+        let current_nonce =
+            if let near_primitives::views::QueryResponseKind::AccessKey(online_signer_access_key) =
+                online_signer_access_key_response.kind
+            {
+                online_signer_access_key.nonce
+            } else {
+                return Err(color_eyre::Report::msg(format!(
+                    "Something unexpected was received instead of the access key information"
+                )));
+            };
         let unsigned_transaction = near_primitives::transaction::Transaction {
             signer_id: self.signer_account_id.clone(),
             public_key: self.signer_public_key.clone(),
             receiver_id: self.receiver_account_id.clone(),
             actions: vec![],
-            block_hash,
-            nonce,
+            block_hash: online_signer_access_key_response.block_hash,
+            nonce: current_nonce + 1,
         };
 
         match &self.subcommand {

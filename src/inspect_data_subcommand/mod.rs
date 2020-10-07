@@ -9,18 +9,16 @@ pub struct CliArgs {
     subcommand: CliSubCommand,
 }
 
-impl CliArgs {
-    fn rpc_client(&self) -> near_jsonrpc_client::JsonRpcClient {
-        near_jsonrpc_client::new_client("https://rpc.testnet.near.org")
-    }
-}
-
 #[derive(Debug, clap::Clap)]
 pub enum CliSubCommand {
     Blocks(blocks_subcommand::CliArgs),
 }
 
 impl CliArgs {
+    fn rpc_client(&self) -> near_jsonrpc_client::JsonRpcClient {
+        near_jsonrpc_client::new_client("https://rpc.testnet.near.org")
+    }
+
     pub async fn process(&self, _parent_cli_args: &super::CliArgs) -> crate::CliResult {
         match &self.subcommand {
             CliSubCommand::Blocks(blocks_subcommand) => blocks_subcommand.process(self).await,
