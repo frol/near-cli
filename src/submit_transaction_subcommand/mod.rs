@@ -1,3 +1,4 @@
+mod call_function_subcommand;
 mod transfer_subcommand;
 
 /// Submit transactions (like transfer tokens, call a function, etc) to NEAR
@@ -22,6 +23,7 @@ pub struct CliArgs {
 #[derive(Debug, clap::Clap)]
 pub enum CliSubCommand {
     Transfer(transfer_subcommand::CliArgs),
+    CallFunction(call_function_subcommand::CliArgs),
 }
 
 impl CliArgs {
@@ -68,6 +70,11 @@ impl CliArgs {
         match &self.subcommand {
             CliSubCommand::Transfer(transfer_subcommand) => {
                 transfer_subcommand
+                    .process(self, unsigned_transaction)
+                    .await
+            }
+            CliSubCommand::CallFunction(call_function_subcommand) => {
+                call_function_subcommand
                     .process(self, unsigned_transaction)
                     .await
             }

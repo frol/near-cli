@@ -1,3 +1,4 @@
+mod call_function_subcommand;
 mod transfer_subcommand;
 
 /// Construct transactions (like transfer tokens, call a function, etc) ready to
@@ -30,6 +31,7 @@ pub struct CliArgs {
 #[derive(Debug, clap::Clap)]
 pub enum CliSubCommand {
     Transfer(transfer_subcommand::CliArgs),
+    FunctionCall(call_function_subcommand::CliArgs),
 }
 
 impl CliArgs {
@@ -46,6 +48,11 @@ impl CliArgs {
         match &self.subcommand {
             CliSubCommand::Transfer(transfer_subcommand) => {
                 transfer_subcommand
+                    .process(self, unsigned_transaction)
+                    .await
+            }
+            CliSubCommand::FunctionCall(function_call_subcommand) => {
+                function_call_subcommand
                     .process(self, unsigned_transaction)
                     .await
             }
