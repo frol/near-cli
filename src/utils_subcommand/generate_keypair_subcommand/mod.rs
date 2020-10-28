@@ -1,5 +1,24 @@
 use strum::VariantNames;
 
+fn bip32path_to_string(bip32path: &slip10::BIP32Path) -> String {
+    const HARDEND: u32 = 1 << 31;
+
+    format!(
+        "m/{}",
+        (0..bip32path.depth())
+            .map(|index| {
+                let value = *bip32path.index(index).unwrap();
+                if value < HARDEND {
+                    value.to_string()
+                } else {
+                    format!("{}'", value - HARDEND)
+                }
+            })
+            .collect::<Vec<String>>()
+            .join("/")
+    )
+}
+
 /// Generate a key pair of secret and public keys (use it anywhere you need
 /// Ed25519 keys)
 #[derive(Debug, clap::Clap)]
@@ -61,15 +80,20 @@ impl CliArgs {
         match self.format {
             crate::common::OutputFormat::Plaintext => {
                 println!(
-                    "Master Seed Phrase: {}\nImplicit Account ID: {}\nPublic Key: {}\nSECRET KEYPAIR: {}",
-                    master_seed_phrase, implicit_account_id, public_key_str, secret_keypair_str,
+                    "Master Seed Phrase: {}\nSeed Phrase HD Path: {}\nImplicit Account ID: {}\nPublic Key: {}\nSECRET KEYPAIR: {}",
+                    master_seed_phrase,
+                    bip32path_to_string(&self.seed_phrase_hd_path),
+                    implicit_account_id,
+                    public_key_str,
+                    secret_keypair_str,
                 );
             }
             crate::common::OutputFormat::Json => {
                 println!(
                     "{}",
                     serde_json::json!({
-                        "seed_phrase": master_seed_phrase,
+                        "master_seed_phrase": master_seed_phrase,
+                        "seed_phrase_hd_path": bip32path_to_string(&self.seed_phrase_hd_path),
                         "account_id": implicit_account_id,
                         "public_key": public_key_str,
                         "private_key": secret_keypair_str,
